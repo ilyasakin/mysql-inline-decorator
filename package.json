@@ -1,31 +1,46 @@
 {
-	"name": "mysql-inline-decorator",
-	"description": "Add color coding to inline MYSQL string inside ``",
-	"version": "0.0.5",
-	"publisher": "odubuc",
-	"license": "MIT",
-	"engines": {
-		"vscode": "0.10.x"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"*"
-	],
-	"main": "./out/extension",
-	"scripts": {
-		"vscode:prepublish": "tsc -p ./",
-		"compile": "tsc -watch -p ./",
-		"postinstall": "node ./node_modules/vscode/bin/install"
-	},
-	"devDependencies": {
-		"vscode": "^1.0.0",
-		"typescript": "^2.1.4",
-		"@types/node": "*"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/odubuc/mysql-inline-decorator.git"
-  	}
+  "name": "mysql-inline-decorator",
+  "displayName": "MySQL Inline Decorator",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.63.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./dist/extension.js",
+  "scripts": {
+    "vscode:prepublish": "yarn run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "yarn run compile-tests && yarn run compile && yarn run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.63.0",
+    "@types/glob": "^7.1.4",
+    "@types/mocha": "^9.0.0",
+    "@types/node": "14.x",
+    "@typescript-eslint/eslint-plugin": "^5.1.0",
+    "@typescript-eslint/parser": "^5.1.0",
+    "eslint": "^8.1.0",
+    "glob": "^7.1.7",
+    "mocha": "^9.1.3",
+    "typescript": "^4.4.4",
+    "ts-loader": "^9.2.5",
+    "webpack": "^5.52.1",
+    "webpack-cli": "^4.8.0",
+    "@vscode/test-electron": "^1.6.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ilyasakin/mysql-inline-decorator.git"
+  }
 }
