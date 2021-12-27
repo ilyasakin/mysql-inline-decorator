@@ -1,6 +1,7 @@
 {
-  "name": "mysql-inline-decorator",
-  "displayName": "MySQL Inline Decorator",
+  "name": "mysql-inline-decorator-mkii",
+  "displayName": "MySQL Inline Decorator MKII",
+  "publisher": "ilyasakin",
   "version": "1.0.0",
   "engines": {
     "vscode": "^1.63.0"
