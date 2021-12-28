@@ -4,20 +4,21 @@ import { functions, keywords } from './dictionary';
 
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext): void {
-  const FILE_EXTENSION_WHITELIST:string[] = ['js', 'ts'];
-  let activeEditor = vscode.window.activeTextEditor;
-  let currentFileExtension = '';
+  const FILE_EXTENSION_WHITELIST: string[] = ['js', 'ts'];
+  let activeEditor: vscode.TextEditor | undefined =
+    vscode.window.activeTextEditor;
+  let currentFileExtension: string = '';
 
   if (activeEditor) {
-    currentFileExtension = getFileExtention(activeEditor);
+    currentFileExtension = getFileExtension(activeEditor);
     triggerUpdateDecorations();
   }
 
   vscode.window.onDidChangeActiveTextEditor(
-    (editor) => {
+    (editor: vscode.TextEditor | undefined): void => {
       activeEditor = editor;
       if (activeEditor) {
-        currentFileExtension = getFileExtention(activeEditor);
+        currentFileExtension = getFileExtension(activeEditor);
         triggerUpdateDecorations();
       }
     },
@@ -26,7 +27,7 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   vscode.workspace.onDidChangeTextDocument(
-    (event) => {
+    (event: vscode.TextDocumentChangeEvent): void => {
       if (activeEditor && event.document === activeEditor.document) {
         triggerUpdateDecorations();
       }
@@ -36,49 +37,53 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   var timeout: NodeJS.Timeout | null = null;
-  function triggerUpdateDecorations() {
+  function triggerUpdateDecorations(): void {
     if (timeout) {
       clearTimeout(timeout);
     }
+
     timeout = setTimeout(updateDecorations, 150);
   }
 
-  function getFileExtention(activeEditor: vscode.TextEditor) {
+  function getFileExtension(activeEditor: vscode.TextEditor): string {
     return activeEditor.document.fileName.substring(
       activeEditor.document.fileName.lastIndexOf('.') + 1,
       activeEditor.document.fileName.length
     );
   }
 
-  function updateDecorations() {
-    if (!activeEditor || !FILE_EXTENSION_WHITELIST.includes(currentFileExtension)) {
+  function updateDecorations(): void {
+    if (
+      !activeEditor ||
+      !FILE_EXTENSION_WHITELIST.includes(currentFileExtension)
+    ) {
       return;
     }
 
-    const templateStringRegex: RegExp = /`(([^`]|\n)*)`/g;
+    const templateStringRegex: RegExp = /`(.*?)`/gs;
     const text: string = activeEditor.document.getText();
 
-    let match;
-    const wKeywords = [];
-    const wFunctions = [];
-    const wStrings = [];
-    const wParams = [];
-    const wNone = [];
+    let match: RegExpExecArray | null;
+    const wKeywords: vscode.Range[] = [];
+    const wFunctions: vscode.Range[] = [];
+    const wStrings: vscode.Range[] = [];
+    const wParams: vscode.Range[] = [];
+    const wNone: vscode.Range[] = [];
 
     while ((match = templateStringRegex.exec(text))) {
-      const wKeywordFound = findInMatch(match, keywords);
-      const wFunctionFound = findInMatch(match, functions, -1);
+      const wKeywordFound: vscode.Range[] = findInMatch(match, keywords);
+      const wFunctionFound: vscode.Range[] = findInMatch(match, functions, -1);
 
       //at least 2 keywords found
       if (wKeywordFound.length + wFunctionFound.length > 1) {
-        const startPos = activeEditor.document.positionAt(match.index);
-        const endPos = activeEditor.document.positionAt(
+        const startPos: vscode.Position = activeEditor.document.positionAt(
+          match.index
+        );
+        const endPos: vscode.Position = activeEditor.document.positionAt(
           match.index + match[0].length
         );
         const decoration: vscode.Range = new vscode.Range(startPos, endPos);
-
         const wStringFound: vscode.Range[] = findInMatch(match, keywords);
-
         const wParamsFound: vscode.Range[] = findInMatch(match, functions);
 
         wKeywords.push(...wKeywordFound);
