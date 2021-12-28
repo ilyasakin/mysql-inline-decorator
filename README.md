@@ -4,6 +4,11 @@ Same as mysql-inline-decorator but faster.
 
 ## Changelog
 
+### [1.2.1] - 2021-12-28
+#### Improvements
+- Add LICENSE
+- Add README
+
 ### [1.2.0] - 2021-12-28
 #### Improvements
 - Fix 100% CPU usage when finding.
