@@ -10,7 +10,8 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onLanguage:javascript",
+    "onLanguage:typescript"
   ],
   "main": "./dist/extension.js",
   "scripts": {

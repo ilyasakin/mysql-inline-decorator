@@ -2,10 +2,9 @@ import * as vscode from 'vscode';
 import decorations from './decorations';
 import { functions, keywords } from './dictionary';
 
-const mysqlSpaceRegExSnippet = '(?: |\t|\r\n|\r|\n)'; // VSCode doesn't handle the \s meta-character. The \r\n permutations are to handle linefeeds in Windows, Mac & Linux respectively
-
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext): void {
+  const FILE_EXTENSION_WHITELIST:string[] = ['js', 'ts'];
   let activeEditor = vscode.window.activeTextEditor;
   let currentFileExtension = '';
 
@@ -52,7 +51,7 @@ export function activate(context: vscode.ExtensionContext): void {
   }
 
   function updateDecorations() {
-    if (!activeEditor || currentFileExtension === 'json') {
+    if (!activeEditor || !FILE_EXTENSION_WHITELIST.includes(currentFileExtension)) {
       return;
     }
 
