@@ -4,6 +4,10 @@ All notable changes to the "MySQL Inline Decorator MKII" extension will be docum
 
 ## [Unreleased]
 
+## [1.3.0] - 2021-12-29
+### Improvements
+- Improved template string regex
+
 ## [1.2.1] - 2021-12-28
 ### Improvements
 - Add LICENSE

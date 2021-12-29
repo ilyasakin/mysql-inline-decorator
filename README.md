@@ -4,6 +4,10 @@ Same as mysql-inline-decorator but faster.
 
 ## Changelog
 
+### [1.3.0] - 2021-12-29
+#### Improvements
+- Improved template string regex
+
 ### [1.2.1] - 2021-12-28
 #### Improvements
 - Add LICENSE
