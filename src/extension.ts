@@ -60,7 +60,7 @@ export function activate(context: vscode.ExtensionContext): void {
       return;
     }
 
-    const templateStringRegex: RegExp = /`(.*?)`/gs;
+    const templateStringRegex: RegExp = /`([^`]|(\`))*?(?<!\\)`/gm;
     const text: string = activeEditor.document.getText();
 
     let match: RegExpExecArray | null;
