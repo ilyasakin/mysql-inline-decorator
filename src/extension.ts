@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import decorations from './decorations';
 import { functions, keywords } from './dictionary';
 
+const MEASURE_SPEED: boolean = false;
+
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext): void {
   const FILE_EXTENSION_WHITELIST: string[] = ['js', 'ts'];
@@ -106,7 +108,10 @@ export function activate(context: vscode.ExtensionContext): void {
     dictionary: string[],
     iAdjustment?: number
   ): vscode.Range[] {
-    console.time('test');
+    if (MEASURE_SPEED) {
+      console.time('Find In Match Completion Time');
+    }
+
     const matches: vscode.Range[] = [];
     const template: string = iMatch[0];
 
@@ -126,7 +131,7 @@ export function activate(context: vscode.ExtensionContext): void {
           return;
         }
 
-        const startPos = activeEditor.document.positionAt(
+        const startPos: vscode.Position = activeEditor.document.positionAt(
           ((match as RegExpMatchArray).index as number) + iMatch.index
         );
 
@@ -141,7 +146,10 @@ export function activate(context: vscode.ExtensionContext): void {
       });
     });
 
-    console.timeEnd('test');
+    if (MEASURE_SPEED) {
+      console.timeEnd('Find In Match Completion Time');
+    }
+
     return matches;
   }
 }
