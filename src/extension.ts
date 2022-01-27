@@ -2,8 +2,9 @@ import * as vscode from 'vscode';
 import decorations from './decorations';
 import { functions, keywords } from './dictionary';
 
-const MEASURE_SPEED: boolean = false;
+const MEASURE_SPEED: boolean = true;
 const FILE_EXTENSION_WHITELIST: string[] = ['js', 'ts'];
+const TEMPLATE_REGEX: RegExp = /`([^`]|(\`))*?(?<!\\)`/gm;
 
 let activeEditor: vscode.TextEditor | undefined =
   vscode.window.activeTextEditor;
@@ -22,7 +23,7 @@ const findInMatch = (
   const template: string = iMatch[0];
 
   dictionary.forEach((keyword: string): void => {
-    if (!template.includes(keyword)) {
+    if (!activeEditor || template.indexOf(keyword) === -1) {
       return;
     }
 
@@ -30,11 +31,7 @@ const findInMatch = (
       ...template.matchAll(new RegExp(`(?:\\b|^)(${keyword})(?=\\b|$)`, 'gi')),
     ];
 
-    matchesInTemplate.forEach((match: RegExpMatchArray) => {
-      if (!activeEditor) {
-        return;
-      }
-
+    for (const match of matchesInTemplate) {
       const startPos: vscode.Position = activeEditor.document.positionAt(
         match.index! + iMatch.index
       );
@@ -44,7 +41,7 @@ const findInMatch = (
       );
 
       matches.push(new vscode.Range(startPos, endPos));
-    });
+    }
   });
 
   if (MEASURE_SPEED) {
@@ -62,7 +59,6 @@ const updateDecorations = (): void => {
     return;
   }
 
-  const templateStringRegex: RegExp = /`([^`]|(\`))*?(?<!\\)`/gm;
   const text: string = activeEditor.document.getText();
 
   let match: RegExpExecArray | null;
@@ -72,7 +68,7 @@ const updateDecorations = (): void => {
   const wParams: vscode.Range[] = [];
   const wNone: vscode.Range[] = [];
 
-  while ((match = templateStringRegex.exec(text))) {
+  while ((match = TEMPLATE_REGEX.exec(text))) {
     const wKeywordFound: vscode.Range[] = findInMatch(match, keywords);
     const wFunctionFound: vscode.Range[] = findInMatch(match, functions, -1);
 
@@ -128,8 +124,8 @@ export const activate = (context: vscode.ExtensionContext): void => {
 
   vscode.window.onDidChangeActiveTextEditor(
     (editor: vscode.TextEditor | undefined): void => {
-      activeEditor = editor;
-      if (activeEditor) {
+      if (editor) {
+        activeEditor = editor;
         currentFileExtension = getFileExtension(activeEditor);
         triggerUpdateDecorations();
       }
